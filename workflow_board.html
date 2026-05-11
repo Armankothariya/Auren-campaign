@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUREN — Creative Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --ink:      #050507;
+  --navy:     #080E1C;
+  --graphite: #111118;
+  --carbon:   #1A1D28;
+  --silver:   #8A8F9E;
+  --mist:     #B8BCC8;
+  --white:    #F0F1F5;
+  --blue:     #4A8FE2;
+  --blue-dim: rgba(74,143,226,0.12);
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans:  'DM Sans', sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--ink);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content:''; position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 600px 500px at 15% 20%, rgba(74,143,226,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 400px at 85% 80%, rgba(74,143,226,0.03) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+.noise {
+  position:fixed; inset:0; opacity:0.025; z-index:1; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.page { position:relative; z-index:2; max-width:1200px; margin:0 auto; padding:80px 60px; }
+
+/* Nav back */
+.nav-back {
+  position:fixed; top:32px; left:60px; z-index:100;
+  display:flex; align-items:center; gap:12px;
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--silver); text-decoration:none;
+  transition:color 0.3s;
+}
+
+.nav-back:hover { color:var(--white); }
+.nav-back svg {
+  width:16px; height:16px;
+  stroke:currentColor; stroke-width:1.5; fill:none;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+
+/* Header */
+.header { margin-bottom:80px; padding-bottom:60px; border-bottom:1px solid rgba(255,255,255,0.06); }
+
+.eyebrow {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:8px 18px; border:1px solid rgba(74,143,226,0.25);
+  border-radius:20px; font-size:10px; letter-spacing:3px;
+  text-transform:uppercase; color:var(--blue); margin-bottom:30px;
+}
+
+.eyebrow::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--blue); animation:pulse 2s infinite; }
+
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.title {
+  font-family:var(--font-serif);
+  font-size:clamp(48px, 6vw, 80px);
+  font-weight:300; letter-spacing:4px;
+  line-height:0.95;
+  background:linear-gradient(140deg, var(--white) 20%, var(--silver) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:16px;
+}
+
+.subtitle {
+  font-family:var(--font-serif);
+  font-size:18px; font-style:italic; font-weight:300;
+  color:var(--silver); letter-spacing:2px;
+}
+
+/* Timeline */
+.timeline { position:relative; }
+.timeline::before {
+  content:''; position:absolute;
+  left:48px; top:0; bottom:0; width:1px;
+  background:linear-gradient(to bottom, transparent, rgba(74,143,226,0.25) 10%, rgba(74,143,226,0.25) 90%, transparent);
+}
+
+.step {
+  display:grid; grid-template-columns:96px 1fr;
+  gap:50px; padding:50px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  position:relative;
+  opacity:0; animation:slideIn 0.7s cubic-bezier(0.23,1,0.32,1) forwards;
+}
+
+.step:nth-child(1){animation-delay:0.1s;}
+.step:nth-child(2){animation-delay:0.22s;}
+.step:nth-child(3){animation-delay:0.34s;}
+.step:nth-child(4){animation-delay:0.46s;}
+.step:nth-child(5){animation-delay:0.58s;}
+.step:nth-child(6){animation-delay:0.7s;}
+.step:nth-child(7){animation-delay:0.82s;}
+
+@keyframes slideIn {
+  from { opacity:0; transform:translateX(-20px); }
+  to { opacity:1; transform:translateX(0); }
+}
+
+.step:last-child { border-bottom:none; }
+
+.step-node {
+  width:96px; height:96px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--graphite);
+  border:1px solid rgba(74,143,226,0.2);
+  border-radius:4px; position:relative;
+  transition:all 0.4s ease;
+}
+
+.step:hover .step-node {
+  background:rgba(74,143,226,0.08);
+  border-color:var(--blue);
+  box-shadow:0 0 30px rgba(74,143,226,0.15);
+}
+
+.step-num {
+  font-family:var(--font-serif);
+  font-size:36px; font-weight:600;
+  color:var(--blue); letter-spacing:-1px;
+}
+
+.step-content { padding-top:4px; }
+
+.step-phase {
+  font-size:10px; letter-spacing:4px; text-transform:uppercase;
+  color:var(--blue); opacity:0.6; margin-bottom:10px;
+}
+
+.step-title {
+  font-family:var(--font-serif);
+  font-size:28px; font-weight:600;
+  letter-spacing:1px; margin-bottom:16px;
+}
+
+.step-body {
+  font-size:14px; color:var(--silver);
+  line-height:1.9; max-width:640px; margin-bottom:24px;
+}
+
+.tags { display:flex; flex-wrap:wrap; gap:8px; }
+.tag {
+  padding:6px 14px; border:1px solid rgba(255,255,255,0.08);
+  border-radius:2px; font-size:10px; letter-spacing:1.5px;
+  text-transform:uppercase; color:var(--silver);
+  transition:all 0.3s;
+}
+
+.tag:hover {
+  background:var(--blue-dim);
+  border-color:rgba(74,143,226,0.3);
+  color:var(--blue);
+}
+
+.outcome {
+  margin-top:24px; padding:16px 20px;
+  background:rgba(74,143,226,0.04);
+  border-left:2px solid rgba(74,143,226,0.3);
+  border-radius:0 2px 2px 0;
+  font-size:13px; color:rgba(138,143,158,0.8); line-height:1.7;
+}
+
+.outcome strong { color:var(--blue); font-weight:500; }
+
+/* Pipeline */
+.pipeline { margin-top:80px; }
+.pipeline-title {
+  font-family:var(--font-serif);
+  font-size:32px; font-weight:300;
+  letter-spacing:2px; margin-bottom:40px;
+  text-align:center;
+}
+
+.flow {
+  display:flex; align-items:stretch;
+  background:var(--graphite);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:4px; overflow:hidden;
+}
+
+.flow-node {
+  flex:1; padding:36px 24px;
+  position:relative;
+  border-right:1px solid rgba(255,255,255,0.05);
+  transition:background 0.3s;
+}
+
+.flow-node:last-child { border-right:none; }
+.flow-node:hover { background:rgba(74,143,226,0.04); }
+
+.flow-node::after {
+  content:''; position:absolute; right:-8px; top:50%;
+  transform:translateY(-50%);
+  width:0; height:0;
+  border-left:6px solid rgba(74,143,226,0.3);
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+  z-index:2;
+}
+
+.flow-node:last-child::after { display:none; }
+
+.fn-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--blue); opacity:0.4;
+  margin-bottom:16px;
+}
+
+.fn-step {
+  font-size:10px; letter-spacing:3px;
+  text-transform:uppercase; color:var(--blue);
+  opacity:0.5; margin-bottom:10px;
+}
+
+.fn-title {
+  font-family:var(--font-serif);
+  font-size:17px; font-weight:600;
+  letter-spacing:1px; margin-bottom:10px;
+}
+
+.fn-body {
+  font-size:12px; color:var(--silver); line-height:1.7;
+}
+
+/* Tools */
+.tools { margin-top:80px; }
+.tools-label {
+  font-size:10px; letter-spacing:4px;
+  text-transform:uppercase; color:var(--silver);
+  opacity:0.3; margin-bottom:24px;
+}
+
+.tools-grid {
+  display:grid; grid-template-columns:repeat(4, 1fr);
+  gap:2px; background:rgba(255,255,255,0.04);
+}
+
+.tool-card {
+  background:var(--ink); padding:32px 24px;
+  transition:background 0.3s;
+}
+
+.tool-card:hover { background:rgba(74,143,226,0.04); }
+
+.tool-icon {
+  width:36px; height:36px; margin-bottom:16px;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg, rgba(74,143,226,0.15), rgba(74,143,226,0.05));
+  border:1px solid rgba(74,143,226,0.15);
+  border-radius:6px;
+}
+
+.tool-icon svg {
+  width:18px; height:18px;
+  stroke:var(--blue); stroke-width:1.5; fill:none;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+
+.tool-name {
+  font-family:var(--font-serif);
+  font-size:15px; font-weight:600;
+  letter-spacing:1px; margin-bottom:6px;
+}
+
+.tool-role {
+  font-size:12px; color:var(--silver); line-height:1.6;
+}
+
+/* Footer */
+.footer {
+  margin-top:80px; padding-top:40px;
+  border-top:1px solid rgba(255,255,255,0.05);
+  display:flex; justify-content:space-between; align-items:center;
+}
+
+.footer-brand {
+  font-family:var(--font-serif);
+  font-size:18px; font-weight:600;
+  letter-spacing:6px; color:var(--white); opacity:0.3;
+}
+
+.footer-info {
+  font-size:11px; letter-spacing:2px;
+  text-transform:uppercase; color:var(--silver); opacity:0.25;
+}
+
+/* Responsive */
+@media (max-width:1024px) {
+  .page { padding:60px 40px; }
+  .flow { flex-wrap:wrap; }
+  .flow-node { flex:1 1 40%; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .flow-node:nth-child(2n)::after { display:none; }
+  .tools-grid { grid-template-columns:repeat(2,1fr); }
+}
+
+@media (max-width:768px) {
+  .step { grid-template-columns:64px 1fr; gap:24px; }
+  .step-node { width:64px; height:64px; }
+  .step-num { font-size:28px; }
+  .flow-node { flex:1 1 100%; }
+  .flow-node::after { display:none; }
+  .tools-grid { grid-template-columns:1fr; }
+  .footer { flex-direction:column; gap:16px; text-align:center; }
+  .nav-back { left:24px; top:24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<a href="index.html" class="nav-back">
+  <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  Back to Campaign
+</a>
+
+<div class="page">
+
+<header class="header">
+  <div class="eyebrow">Creative Workflow</div>
+  <h1 class="title">The Process</h1>
+  <p class="subtitle">From Concept to Campaign Delivery — Seven Stage Production</p>
+</header>
+
+<div class="timeline">
+
+  <div class="step">
+    <div class="step-node"><span class="step-num">01</span></div>
+    <div class="step-content">
+      <div class="step-phase">Phase One</div>
+      <h2 class="step-title">Concept & Brand Identity</h2>
+      <p class="step-body">
+        Established the complete brand architecture for AUREN: visual language, material hierarchy, lighting philosophy, and commercial positioning. Defined AUREN as a premium luxury audio brand — borrowing B&O's restraint, Apple's product clarity, and Dyson's engineering aesthetic.
+      </p>
+      <div class="tags">
+        <span class="tag">Brand Architecture</span>
+        <span class="tag">Visual Identity</span>
+        <span class="tag">Colour System</span>
+        <span class="tag">Typography Direction</span>
+      </div>
+      <div class="outcome">
+        <strong>Output:</strong> Complete AUREN brand style guide — palette, typographic scale, material references, and cinematic direction framework.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-node"><span class="step-num">02</span></div>
+    <div class="step-content">
+      <div class="step-phase">Phase Two</div>
+      <h2 class="step-title">AI Generation & Iteration</h2>
+      <p class="step-body">
+        Generated multiple headphone design concepts using structured prompt engineering — iterating on product geometry, material expression, and compositional arrangement. Each iteration evaluated against brand criteria: realism, commercial believability, and material consistency.
+      </p>
+      <div class="tags">
+        <span class="tag">Prompt Engineering</span>
+        <span class="tag">Multiple Iterations</span>
+        <span class="tag">Lighting Tests</span>
+        <span class="tag">Composition Studies</span>
+      </div>
+      <div class="outcome">
+        <strong>Output:</strong> 3 selected hero compositions from 40+ generated candidates. Selection based on material accuracy, lighting drama, and compositional strength.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-node"><span class="step-num">03</span></div>
+    <div class="step-content">
+      <div class="step-phase">Phase Three</div>
+      <h2 class="step-title">Cleanup & Assembly</h2>
+      <p class="step-body">
+        Systematic post-AI cleanup addressing all common generation artefacts: geometry inconsistencies at headband-cup junctions, uneven leather texture tiling, over-blurred LED ring edges, and background haze contamination. Each image assessed against a 12-point quality checklist.
+      </p>
+      <div class="tags">
+        <span class="tag">Artefact Removal</span>
+        <span class="tag">Geometry Correction</span>
+        <span class="tag">Edge Refinement</span>
+        <span class="tag">Inpainting</span>
+      </div>
+      <div class="outcome">
+        <strong>Output:</strong> Cleaned base images free of AI artefacts, with accurate product geometry, consistent material surfaces, and sharp, believable reflections.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-node"><span class="step-num">04</span></div>
+    <div class="step-content">
+      <div class="step-phase">Phase Four</div>
+      <h2 class="step-title">Colour Grading & Cinematic Polish</h2>
+      <p class="step-body">
+        Applied unified cinematic grading strategy across all campaign shots. Shadows pushed toward teal-blue to complement the AUREN LED signature. Midtones kept neutral-dark for material accuracy. Highlights permitted warm drift to contrast the cool chrome.
+      </p>
+      <div class="tags">
+        <span class="tag">Teal-Orange Split Grade</span>
+        <span class="tag">Selective Sharpening</span>
+        <span class="tag">Contrast Architecture</span>
+        <span class="tag">Adaptive Vignette</span>
+      </div>
+      <div class="outcome">
+        <strong>Output:</strong> Consistent cinematic look across all campaign assets with individual shot character preserved. LUT profile documented for production team reference.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-node"><span class="step-num">05</span></div>
+    <div class="step-content">
+      <div class="step-phase">Phase Five</div>
+      <h2 class="step-title">Material Consistency Lock</h2>
+      <p class="step-body">
+        Ensured identical headphone geometry, finish, and LED signature across all campaign assets. Absolute product integrity maintained across studio, lifestyle, and macro contexts. Cross-referenced all three shots against master product reference.
+      </p>
+      <div class="tags">
+        <span class="tag">Geometry Lock</span>
+        <span class="tag">Surface Match</span>
+        <span class="tag">LED Calibration</span>
+        <span class="tag">Cross-Reference</span>
+      </div>
+      <div class="outcome">
+        <strong>Output:</strong> Verified product consistency document — all shots aligned to master reference with zero deviation in material or form.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-node"><span class="step-num">06</span></div>
+    <div class="step-content">
+      <div class="step-phase">Phase Six</div>
+      <h2 class="step-title">Reflection & Realism Correction</h2>
+      <p class="step-body">
+        Corrected all reflective surfaces to achieve physical accuracy. Chrome bezel highlights aligned to actual light source positions. Obsidian surface reflections recalculated for correct angle of incidence. LED bloom controlled to prevent digital over-glow.
+      </p>
+      <div class="tags">
+        <span class="tag">Reflection Physics</span>
+        <span class="tag">Specular Accuracy</span>
+        <span class="tag">Bloom Control</span>
+        <span class="tag">Surface Realism</span>
+      </div>
+      <div class="outcome">
+        <strong>Output:</strong> Photorealistic reflection behaviour across all materials — believable under any lighting condition.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-node"><span class="step-num">07</span></div>
+    <div class="step-content">
+      <div class="step-phase">Phase Seven</div>
+      <h2 class="step-title">Final Presentation & Delivery</h2>
+      <p class="step-body">
+        Designed complete campaign presentation system using AUREN's typographic and spatial framework. Typography scaled to editorial luxury standards. Export prepared for digital, large-format print, and PDF review with colour-managed spaces and embedded ICC profiles.
+      </p>
+      <div class="tags">
+        <span class="tag">Editorial Layout</span>
+        <span class="tag">Typography System</span>
+        <span class="tag">Export Preparation</span>
+        <span class="tag">Colour Management</span>
+      </div>
+      <div class="outcome">
+        <strong>Output:</strong> Production-ready campaign boards, organised asset library, and complete deliverable package ready for client presentation.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="pipeline">
+  <h2 class="pipeline-title">Production Pipeline</h2>
+  <div class="flow">
+    <div class="flow-node">
+      <div class="fn-dot"></div>
+      <div class="fn-step">Stage 1</div>
+      <div class="fn-title">Ideation</div>
+      <div class="fn-body">Brand strategy, visual identity, competitor positioning, and cinematic direction</div>
+    </div>
+    <div class="flow-node">
+      <div class="fn-dot"></div>
+      <div class="fn-step">Stage 2</div>
+      <div class="fn-title">Generation</div>
+      <div class="fn-body">AI-guided product image creation across 40+ iterations with prompt refinement</div>
+    </div>
+    <div class="flow-node">
+      <div class="fn-dot"></div>
+      <div class="fn-step">Stage 3</div>
+      <div class="fn-title">Cleanup</div>
+      <div class="fn-body">Artefact removal, geometry correction, material surface refinement, edge masking</div>
+    </div>
+    <div class="flow-node">
+      <div class="fn-dot"></div>
+      <div class="fn-step">Stage 4</div>
+      <div class="fn-title">Grade</div>
+      <div class="fn-body">Cinematic colour grading, contrast architecture, selective sharpening, vignetting</div>
+    </div>
+    <div class="flow-node">
+      <div class="fn-dot"></div>
+      <div class="fn-step">Stage 5</div>
+      <div class="fn-title">Delivery</div>
+      <div class="fn-body">Presentation boards, export package, PDF generation, structured asset library</div>
+    </div>
+  </div>
+</div>
+
+<div class="tools">
+  <div class="tools-label">Tools & Software Stack</div>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>
+      </div>
+      <div class="tool-name">Flux Pro 1.1</div>
+      <div class="tool-role">Primary generation engine for photorealistic product renders and hero compositions</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      </div>
+      <div class="tool-name">Adobe Lightroom</div>
+      <div class="tool-role">Cinematic colour grading, exposure architecture, shadow and highlight separation</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 12h10M12 7v10"/></svg>
+      </div>
+      <div class="tool-name">Photoshop CC</div>
+      <div class="tool-role">Artefact cleanup, inpainting, masking, reflection correction, frequency separation</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="tool-name">Leonardo AI</div>
+      <div class="tool-role">Lifestyle environment generation, depth-of-field simulation, context compositing</div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-brand">AUREN</div>
+  <div class="footer-info">Creative Process Documentation 2025</div>
+</footer>
+
+</div>
+
+</body>
+</html>

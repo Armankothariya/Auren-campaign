@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUREN — Cinematic Storyboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --ink:    #050507;
+  --navy:   #080E1C;
+  --graph:  #111118;
+  --carbon: #1A1D28;
+  --silver: #8A8F9E;
+  --mist:   #B8BCC8;
+  --white:  #F0F1F5;
+  --blue:   #4A8FE2;
+  --gold:   #C9A96E;
+  --red:    #E24A4A;
+  --fs:     'Cormorant Garamond', serif;
+  --fb:     'DM Sans', sans-serif;
+  --fm:     'Space Mono', monospace;
+}
+
+body {
+  font-family: var(--fb);
+  background: var(--ink);
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+body::before {
+  content:''; position:fixed; inset:0;
+  background:radial-gradient(ellipse 800px 600px at 50% 20%, rgba(74,143,226,0.04) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+.noise {
+  position:fixed; inset:0; opacity:0.025; z-index:1; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.page { position:relative; z-index:2; padding:80px 60px; max-width:1400px; margin:0 auto; }
+
+/* Nav back */
+.nav-back {
+  position:fixed; top:32px; left:60px; z-index:100;
+  display:flex; align-items:center; gap:12px;
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--silver); text-decoration:none;
+  transition:color 0.3s;
+}
+
+.nav-back:hover { color:var(--white); }
+.nav-back svg {
+  width:16px; height:16px;
+  stroke:currentColor; stroke-width:1.5; fill:none;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+
+/* Header */
+.sb-header {
+  margin-bottom:60px;
+  padding-bottom:50px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+.sb-eyebrow {
+  display:flex; align-items:center; gap:16px;
+  font-size:10px; letter-spacing:4px;
+  text-transform:uppercase; color:var(--blue);
+  margin-bottom:24px;
+}
+.sb-eyebrow-line { width:40px; height:1px; background:var(--blue); }
+
+.sb-headline {
+  font-family:var(--fs);
+  font-size:clamp(48px, 6vw, 80px);
+  font-weight:300; letter-spacing:4px;
+  line-height:0.95;
+  background:linear-gradient(140deg,var(--white) 20%,var(--silver) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:16px;
+}
+.sb-sub { font-family:var(--fs); font-size:18px; font-style:italic; color:var(--silver); letter-spacing:2px; }
+
+.sb-specs {
+  display:flex; gap:50px; margin-top:36px;
+}
+.sb-spec-label {
+  font-size:10px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--silver); opacity:0.4; margin-bottom:4px;
+}
+.sb-spec-val {
+  font-family:var(--fs); font-size:16px; color:var(--mist); letter-spacing:1px;
+}
+
+/* Film strip header */
+.film-header {
+  display:flex; align-items:center; gap:0;
+  margin-bottom:40px;
+}
+.film-perf {
+  display:flex; gap:8px; padding:0 20px;
+}
+.film-hole {
+  width:12px; height:18px; border-radius:3px;
+  background:rgba(155,163,180,0.06);
+  border:1px solid rgba(155,163,180,0.1);
+}
+.film-label-band {
+  flex:1; height:40px;
+  background:var(--graph);
+  border:1px solid rgba(155,163,180,0.06);
+  display:flex; align-items:center; padding:0 24px;
+  gap:40px;
+}
+.flab { font-family:var(--fm); font-size:10px; color:var(--silver); opacity:0.3; letter-spacing:2px; }
+
+/* Storyboard grid */
+.sb-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.04);
+}
+
+.sb-panel {
+  background:var(--ink);
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform 0.4s cubic-bezier(0.23,1,0.32,1);
+}
+.sb-panel:hover { z-index:10; transform:scale(1.01); }
+
+/* Panel scene illustrations */
+.panel-scene {
+  aspect-ratio:16/9;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Scene 1: Black void, product emerges */
+.scene-1 {
+  background:radial-gradient(ellipse 60% 80% at 50% 60%, #1A2840 0%, #0E1828 30%, #070A12 100%);
+}
+.scene-1::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle 120px at 50% 55%, rgba(74,143,226,0.2) 0%, transparent 70%);
+}
+.scene-1-product {
+  position:absolute; top:15%; left:50%; transform:translateX(-50%);
+  width:55%; height:75%;
+  background:radial-gradient(ellipse at 45% 40%, #3A3F52 0%, #1A1C26 50%, #0A0C14 100%);
+  border-radius:50% 50% 48% 48% / 55% 55% 45% 45%;
+  box-shadow:0 0 60px rgba(74,143,226,0.15), inset 0 -20px 40px rgba(74,143,226,0.08);
+}
+.scene-1-glow {
+  position:absolute; bottom:8%; left:50%; transform:translateX(-50%);
+  width:70%; height:20%;
+  background:radial-gradient(ellipse at center, rgba(74,143,226,0.1) 0%, transparent 70%);
+  border-radius:50%;
+}
+.scene-1-led {
+  position:absolute; top:38%; left:32%;
+  width:15%; height:8%;
+  background:radial-gradient(circle, rgba(74,143,226,0.5) 0%, transparent 70%);
+  border-radius:50%;
+}
+.scene-1-led-r {
+  position:absolute; top:36%; right:28%;
+  width:12%; height:7%;
+  background:radial-gradient(circle, rgba(74,143,226,0.4) 0%, transparent 70%);
+  border-radius:50%;
+}
+
+/* Scene 2: Orbital sweep */
+.scene-2 {
+  background:linear-gradient(135deg, #080E1C 0%, #0D1525 50%, #080E1C 100%);
+}
+.scene-2::before {
+  content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:75%; height:75%; border:1px solid rgba(74,143,226,0.06); border-radius:50%;
+}
+.scene-2::after {
+  content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:55%; height:55%; border:1px dashed rgba(74,143,226,0.04); border-radius:50%;
+}
+.scene-2-product {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:40%; height:60%;
+  background:linear-gradient(135deg, #2A2D3C 0%, #14151E 100%);
+  border-radius:45% 45% 50% 50%;
+  box-shadow:0 0 40px rgba(74,143,226,0.1);
+}
+.scene-2-motion {
+  position:absolute; top:50%; left:10%; transform:translateY(-50%);
+  width:80%; height:2px;
+  background:linear-gradient(to right, transparent, rgba(74,143,226,0.1), rgba(74,143,226,0.2), rgba(74,143,226,0.1), transparent);
+}
+
+/* Scene 3: Macro ear cup */
+.scene-3 {
+  background:radial-gradient(circle at 40% 40%, #181E30 0%, #080C14 100%);
+}
+.scene-3-cup {
+  position:absolute; top:-10%; left:5%;
+  width:80%; height:120%;
+  background:radial-gradient(circle at 40% 35%, #28304A 0%, #181E30 40%, #0A0C16 100%);
+  border-radius:50%;
+}
+.scene-3-ring {
+  position:absolute; top:10%; left:18%;
+  width:56%; height:80%;
+  border:8px solid rgba(180,185,200,0.15);
+  border-radius:50%;
+  box-shadow:0 0 20px rgba(74,143,226,0.2), inset 0 0 20px rgba(74,143,226,0.1);
+}
+.scene-3-led-ring {
+  position:absolute; top:18%; left:26%;
+  width:40%; height:64%;
+  border:4px solid rgba(74,143,226,0.4);
+  border-radius:50%;
+  box-shadow:0 0 15px rgba(74,143,226,0.3), inset 0 0 15px rgba(74,143,226,0.15);
+}
+.scene-3-center {
+  position:absolute; top:36%; left:38%;
+  width:16%; height:28%;
+  background:radial-gradient(circle, #1C2030 0%, #0A0C14 100%);
+  border-radius:50%;
+  border:2px solid rgba(180,185,200,0.1);
+}
+
+/* Scene 4: Reflection */
+.scene-4 {
+  background:linear-gradient(180deg, #060810 0%, #0C1020 40%, #101828 100%);
+}
+.scene-4-surface {
+  position:absolute; bottom:0; left:0; right:0; height:50%;
+  background:linear-gradient(180deg, rgba(10,15,28,0) 0%, rgba(8,10,20,0.8) 100%);
+  border-top:1px solid rgba(74,143,226,0.06);
+}
+.scene-4-product {
+  position:absolute; top:5%; left:50%; transform:translateX(-50%);
+  width:50%; height:48%;
+  background:radial-gradient(ellipse at 40% 30%, #2C3248 0%, #181B28 50%, #0A0C14 100%);
+  border-radius:50% 50% 48% 48%;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(74,143,226,0.08);
+}
+.scene-4-reflection {
+  position:absolute; bottom:2%; left:50%; transform:translateX(-50%);
+  width:50%; height:45%;
+  background:radial-gradient(ellipse at 40% 70%, rgba(44,50,72,0.25) 0%, rgba(24,27,40,0.15) 50%, rgba(10,12,20,0.05) 100%);
+  border-radius:48% 48% 50% 50%;
+  transform:translateX(-50%) scaleY(-1);
+  opacity:0.35;
+}
+.scene-4-glow {
+  position:absolute; bottom:45%; left:50%; transform:translateX(-50%);
+  width:60%; height:10%;
+  background:radial-gradient(ellipse, rgba(74,143,226,0.08) 0%, transparent 70%);
+  border-radius:50%;
+}
+
+/* Scene 5: Lifestyle */
+.scene-5 {
+  background:linear-gradient(140deg, #16100C 0%, #1A130E 40%, #100C08 100%);
+}
+.scene-5-window {
+  position:absolute; top:0; right:0; width:35%; height:100%;
+  background:linear-gradient(180deg, rgba(255,200,120,0.06) 0%, rgba(255,180,80,0.03) 100%);
+  border-left:1px solid rgba(255,180,80,0.04);
+}
+.scene-5-desk {
+  position:absolute; bottom:0; left:0; right:0; height:42%;
+  background:linear-gradient(180deg, #1C150E 0%, #12100A 100%);
+  border-top:1px solid rgba(180,150,100,0.06);
+}
+.scene-5-product {
+  position:absolute; top:20%; left:50%; transform:translateX(-50%);
+  width:44%; height:55%;
+  background:radial-gradient(ellipse at 40% 30%, #2A2830 0%, #18161E 50%, #0C0A12 100%);
+  border-radius:50% 50% 48% 48%;
+  box-shadow:0 20px 40px rgba(0,0,0,0.6);
+}
+.scene-5-led-w {
+  position:absolute; top:40%; left:34%;
+  width:8%; height:12%;
+  background:radial-gradient(circle, rgba(74,143,226,0.3) 0%, transparent 70%);
+  border-radius:50%;
+}
+.scene-5-laptop {
+  position:absolute; bottom:12%; right:12%; width:22%; height:16%;
+  background:#1A1820; border:1px solid rgba(155,163,180,0.08);
+  border-radius:2px;
+}
+
+/* Scene 6: Title reveal */
+.scene-6 {
+  background:radial-gradient(ellipse 70% 60% at 50% 50%, #0D1525 0%, #07080E 100%);
+  display:flex; align-items:center; justify-content:center;
+}
+.scene-6-inner { text-align:center; width:80%; }
+.scene-6-logo {
+  font-family:var(--fs);
+  font-size:48px; font-weight:700;
+  letter-spacing:14px;
+  background:linear-gradient(135deg,rgba(205,211,223,0.9) 0%,rgba(155,163,180,0.6) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:14px;
+}
+.scene-6-line {
+  width:100px; height:1px;
+  background:linear-gradient(to right, transparent, rgba(74,143,226,0.5), transparent);
+  margin:0 auto 14px;
+}
+.scene-6-tagline {
+  font-family:var(--fs); font-size:15px; font-style:italic;
+  color:rgba(155,163,180,0.4); letter-spacing:4px;
+}
+.scene-6-glow {
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 50%, rgba(74,143,226,0.04) 0%, transparent 60%);
+}
+
+/* Panel info */
+.panel-info {
+  padding:24px 22px;
+  border-top:1px solid rgba(255,255,255,0.04);
+}
+.panel-top {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  margin-bottom:12px;
+}
+.panel-shot {
+  font-family:var(--fm); font-size:10px;
+  color:var(--blue); letter-spacing:2px;
+}
+.panel-tc {
+  font-family:var(--fm); font-size:10px;
+  color:var(--silver); opacity:0.3; letter-spacing:1px;
+}
+.panel-title {
+  font-family:var(--fs); font-size:18px; font-weight:600;
+  color:var(--white); letter-spacing:1px; margin-bottom:8px;
+}
+.panel-notes { font-size:12px; color:var(--silver); line-height:1.7; }
+
+.panel-tags { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.ptag {
+  padding:4px 10px; border:1px solid rgba(155,163,180,0.1);
+  font-size:10px; letter-spacing:1px; text-transform:uppercase;
+  color:var(--silver); opacity:0.5; border-radius:1px;
+}
+
+/* Technical notes */
+.tech-section { margin-top:60px; }
+.tech-title {
+  font-family:var(--fs);
+  font-size:32px; font-weight:300; letter-spacing:2px;
+  margin-bottom:32px;
+}
+
+.tech-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+.tech-card {
+  padding:28px 24px;
+  background:var(--graph);
+  border:1px solid rgba(155,163,180,0.06);
+  border-radius:3px;
+}
+.tech-cat {
+  font-size:10px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--blue); opacity:0.6; margin-bottom:14px;
+}
+.tech-card ul {
+  list-style:none; display:flex; flex-direction:column; gap:8px;
+}
+.tech-card ul li {
+  font-size:13px; color:var(--silver); line-height:1.5;
+  padding-left:14px; position:relative;
+}
+.tech-card ul li::before {
+  content:'—'; position:absolute; left:0;
+  color:rgba(74,143,226,0.3); font-size:10px;
+}
+
+/* Shot list table */
+.shot-table { margin-top:50px; width:100%; border-collapse:collapse; }
+.shot-table th {
+  text-align:left; padding:12px 20px;
+  font-size:10px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--silver); opacity:0.3;
+  border-bottom:1px solid rgba(155,163,180,0.08);
+  font-weight:400;
+}
+.shot-table td {
+  padding:16px 20px; font-size:13px;
+  border-bottom:1px solid rgba(155,163,180,0.04);
+  color:var(--silver); vertical-align:top;
+}
+.shot-table tr:hover td { background:rgba(74,143,226,0.02); }
+.shot-table td:first-child { font-family:var(--fm); color:var(--blue); font-size:11px; }
+.shot-table td:nth-child(2) { color:var(--white); font-family:var(--fs); font-size:15px; font-weight:600; }
+
+/* Footer */
+.sb-footer {
+  margin-top:60px; padding-top:40px;
+  border-top:1px solid rgba(155,163,180,0.06);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.sb-footer-brand { font-family:var(--fs); font-size:20px; font-weight:600; letter-spacing:6px; opacity:0.25; }
+.sb-footer-info { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--silver); opacity:0.2; }
+
+/* Responsive */
+@media(max-width:1024px){
+  .page{padding:60px 40px;}
+  .sb-grid{grid-template-columns:1fr 1fr;}
+  .tech-grid{grid-template-columns:1fr 1fr;}
+  .sb-specs{flex-wrap:wrap; gap:24px;}
+}
+
+@media(max-width:768px){
+  .sb-grid{grid-template-columns:1fr;}
+  .tech-grid{grid-template-columns:1fr;}
+  .film-header{flex-wrap:wrap;}
+  .film-perf{display:none;}
+  .nav-back{left:24px;top:24px;}
+}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<a href="index.html" class="nav-back">
+  <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  Back to Campaign
+</a>
+
+<div class="page">
+
+<!-- HEADER -->
+<header class="sb-header">
+  <div class="sb-eyebrow"><div class="sb-eyebrow-line"></div>Cinematic Direction</div>
+  <h1 class="sb-headline">Commercial<br>Storyboard</h1>
+  <p class="sb-sub">AUREN — Precision in Silence · 15 Seconds</p>
+  <div class="sb-specs">
+    <div class="sb-spec">
+      <div class="sb-spec-label">Duration</div>
+      <div class="sb-spec-val">15 Seconds</div>
+    </div>
+    <div class="sb-spec">
+      <div class="sb-spec-label">Format</div>
+      <div class="sb-spec-val">4K · 24fps · 2.39:1</div>
+    </div>
+    <div class="sb-spec">
+      <div class="sb-spec-label">Visual Style</div>
+      <div class="sb-spec-val">Minimal Luxury</div>
+    </div>
+    <div class="sb-spec">
+      <div class="sb-spec-label">Grade</div>
+      <div class="sb-spec-val">Teal-Blue Cinematic</div>
+    </div>
+  </div>
+</header>
+
+<!-- FILM STRIP -->
+<div class="film-header">
+  <div class="film-perf">
+    <div class="film-hole"></div><div class="film-hole"></div>
+    <div class="film-hole"></div><div class="film-hole"></div>
+  </div>
+  <div class="film-label-band">
+    <span class="flab">AUREN — PRECISION IN SILENCE</span>
+    <span class="flab">4K 24P</span>
+    <span class="flab">SCENE 001-006</span>
+    <span class="flab">REV 03</span>
+    <span class="flab">LOCKED</span>
+  </div>
+  <div class="film-perf">
+    <div class="film-hole"></div><div class="film-hole"></div>
+    <div class="film-hole"></div><div class="film-hole"></div>
+  </div>
+</div>
+
+<!-- STORYBOARD PANELS -->
+<div class="sb-grid">
+
+  <!-- PANEL 1 -->
+  <div class="sb-panel">
+    <div class="panel-scene scene-1">
+      <div class="scene-1-product"></div>
+      <div class="scene-1-glow"></div>
+      <div class="scene-1-led"></div>
+      <div class="scene-1-led-r"></div>
+    </div>
+    <div class="panel-info">
+      <div class="panel-top">
+        <span class="panel-shot">SHOT 01 · HERO REVEAL</span>
+        <span class="panel-tc">00:00 – 00:03</span>
+      </div>
+      <div class="panel-title">Product Emergence</div>
+      <div class="panel-notes">AUREN headphones materialise from absolute darkness. LED rings illuminate first — twin blue arcs born from nothing. Slow push in, product rotating 0° to 15°.</div>
+      <div class="panel-tags">
+        <span class="ptag">Push In</span>
+        <span class="ptag">LED First</span>
+        <span class="ptag">f/1.4 Lens</span>
+        <span class="ptag">Motion Blur On</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2 -->
+  <div class="sb-panel">
+    <div class="panel-scene scene-2">
+      <div class="scene-2-product"></div>
+      <div class="scene-2-motion"></div>
+    </div>
+    <div class="panel-info">
+      <div class="panel-top">
+        <span class="panel-shot">SHOT 02 · ORBITAL ROTATE</span>
+        <span class="panel-tc">00:03 – 00:06</span>
+      </div>
+      <div class="panel-title">Full Rotation Reveal</div>
+      <div class="panel-notes">360° product rotation on motorised turntable. Camera holds static. Product completes 270° in 3 seconds. Ambient track enters here — no lyrics, just deep pulse.</div>
+      <div class="panel-tags">
+        <span class="ptag">Static Camera</span>
+        <span class="ptag">Turntable</span>
+        <span class="ptag">Subtle Motion Blur</span>
+        <span class="ptag">Sound: Pulse In</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3 -->
+  <div class="sb-panel">
+    <div class="panel-scene scene-3">
+      <div class="scene-3-cup"></div>
+      <div class="scene-3-ring"></div>
+      <div class="scene-3-led-ring"></div>
+      <div class="scene-3-center"></div>
+    </div>
+    <div class="panel-info">
+      <div class="panel-top">
+        <span class="panel-shot">SHOT 03 · MACRO DETAIL</span>
+        <span class="panel-tc">00:06 – 00:09</span>
+      </div>
+      <div class="panel-title">LED Ring · Material Focus</div>
+      <div class="panel-notes">Extreme macro on the ear cup. LED ring fills 60% of frame. Chrome bezel catches practical light. Rack focus pulls from outer leather to inner LED glow. 120mm macro lens.</div>
+      <div class="panel-tags">
+        <span class="ptag">Macro 120mm</span>
+        <span class="ptag">Rack Focus</span>
+        <span class="ptag">LED Bloom</span>
+        <span class="ptag">High Detail</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 4 -->
+  <div class="sb-panel">
+    <div class="panel-scene scene-4">
+      <div class="scene-4-surface"></div>
+      <div class="scene-4-product"></div>
+      <div class="scene-4-reflection"></div>
+      <div class="scene-4-glow"></div>
+    </div>
+    <div class="panel-info">
+      <div class="panel-top">
+        <span class="panel-shot">SHOT 04 · REFLECTION</span>
+        <span class="panel-tc">00:09 – 00:11</span>
+      </div>
+      <div class="panel-title">Cinematic Mirror Surface</div>
+      <div class="panel-notes">Product rests on polished obsidian surface. Camera slowly lowers to eye level. Perfect mirror reflection below. LED glow spreads across black surface. Transition: cross-dissolve to Shot 5.</div>
+      <div class="panel-tags">
+        <span class="ptag">Eye-Level Crane</span>
+        <span class="ptag">Obsidian Surface</span>
+        <span class="ptag">Mirror Reflect</span>
+        <span class="ptag">Cross Dissolve</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 5 -->
+  <div class="sb-panel">
+    <div class="panel-scene scene-5">
+      <div class="scene-5-window"></div>
+      <div class="scene-5-desk"></div>
+      <div class="scene-5-product"></div>
+      <div class="scene-5-led-w"></div>
+      <div class="scene-5-laptop"></div>
+    </div>
+    <div class="panel-info">
+      <div class="panel-top">
+        <span class="panel-shot">SHOT 05 · LIFESTYLE</span>
+        <span class="panel-tc">00:11 – 00:13</span>
+      </div>
+      <div class="panel-title">Environment in Context</div>
+      <div class="panel-notes">Minimal workspace — AUREN resting beside a blurred laptop. Warm side-window light. Shallow depth of field. Person implied but not present. Audio: ambient track swells, then cuts to silence.</div>
+      <div class="panel-tags">
+        <span class="ptag">Shallow DOF</span>
+        <span class="ptag">Warm Ambient</span>
+        <span class="ptag">Lifestyle Context</span>
+        <span class="ptag">Audio Swell</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 6 -->
+  <div class="sb-panel">
+    <div class="panel-scene scene-6">
+      <div class="scene-6-glow"></div>
+      <div class="scene-6-inner">
+        <div class="scene-6-logo">AUREN</div>
+        <div class="scene-6-line"></div>
+        <div class="scene-6-tagline">Precision in Silence</div>
+      </div>
+    </div>
+    <div class="panel-info">
+      <div class="panel-top">
+        <span class="panel-shot">SHOT 06 · TITLE CARD</span>
+        <span class="panel-tc">00:13 – 00:15</span>
+      </div>
+      <div class="panel-title">Logo & Tagline Reveal</div>
+      <div class="panel-notes">Pure black. AUREN logotype fades in letter by letter over 0.8s — first A, then U-R-E-N. Tagline appears below at 0.4s. LED blue glow pulses once from center. Complete silence.</div>
+      <div class="panel-tags">
+        <span class="ptag">Letter-by-Letter</span>
+        <span class="ptag">Sound: Silence</span>
+        <span class="ptag">LED Pulse Once</span>
+        <span class="ptag">Hold 1.5s</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TECHNICAL NOTES -->
+<div class="tech-section">
+  <h2 class="tech-title">Production Notes</h2>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tech-cat">Camera & Lens</div>
+      <ul>
+        <li>Sony Venice 2 · 6K Full Frame</li>
+        <li>35mm f/1.4 — hero and lifestyle</li>
+        <li>120mm macro — detail shots</li>
+        <li>50mm f/2 — rotation shot</li>
+        <li>Motorised slider for push-in</li>
+        <li>Remote head crane for eye-level</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-cat">Lighting</div>
+      <ul>
+        <li>Primary: Arri SkyPanel S60 soft key</li>
+        <li>Blue rim: Astera Titan tubes × 2</li>
+        <li>Product LED: practical built-in</li>
+        <li>Warm fill: Mole-Richardson 1K egg-crate</li>
+        <li>No hard sources — all diffused</li>
+        <li>LUX level: 2200 at product surface</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-cat">Sound Design</div>
+      <ul>
+        <li>Intro: Sub-bass 40Hz pulse × 3</li>
+        <li>Rotation: Whisper-wind ambient texture</li>
+        <li>Macro: Near-silence + breath sound</li>
+        <li>Lifestyle: Warm room tone, soft piano</li>
+        <li>Logo: Complete silence — intentional</li>
+        <li>Mix: Spatial stereo, subtle reverb tail</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-cat">Grading & Post</div>
+      <ul>
+        <li>DaVinci Resolve · ACES workflow</li>
+        <li>Teal shadow / blue midtone grade</li>
+        <li>S-curve contrast — no crushed blacks</li>
+        <li>LED bloom: Optical glow effect</li>
+        <li>Title card: Optically-printed grain</li>
+        <li>Deliverable: H.265 Master · ProRes 4444</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SHOT LIST -->
+<table class="shot-table">
+  <thead>
+    <tr>
+      <th>Shot</th>
+      <th>Description</th>
+      <th>Camera Movement</th>
+      <th>Duration</th>
+      <th>Transition</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SH-01</td><td>Hero Emergence — Product from Darkness</td><td>Motorised Push In 12mm/s</td><td>3.0s</td><td>Hard Cut</td>
+    </tr>
+    <tr>
+      <td>SH-02</td><td>Orbital 270° Product Rotation</td><td>Static · Turntable active</td><td>3.0s</td><td>Hard Cut</td>
+    </tr>
+    <tr>
+      <td>SH-03</td><td>Macro Detail · LED + Chrome</td><td>Rack Focus — Leather to LED</td><td>3.0s</td><td>Cross Dissolve 12f</td>
+    </tr>
+    <tr>
+      <td>SH-04</td><td>Obsidian Mirror Reflection</td><td>Remote crane — down to eye level</td><td>2.0s</td><td>Cross Dissolve 18f</td>
+    </tr>
+    <tr>
+      <td>SH-05</td><td>Lifestyle Workspace Context</td><td>Static — slight breathing movement</td><td>2.0s</td><td>Fade to Black 12f</td>
+    </tr>
+    <tr>
+      <td>SH-06</td><td>Logo & Tagline Title Card</td><td>No camera movement</td><td>2.0s + hold</td><td>Hold to Black</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- FOOTER -->
+<footer class="sb-footer">
+  <div class="sb-footer-brand">AUREN</div>
+  <div class="sb-footer-info">Cinematic Storyboard 2025</div>
+</footer>
+
+</div>
+</body>
+</html>
