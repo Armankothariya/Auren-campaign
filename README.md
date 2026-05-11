@@ -1,5 +1,7 @@
 # AUREN
 
+link: https://auren-campaign.vercel.app/
+
 A cinematic luxury commercial microsite created for a Generative AI Creative Assignment.
 
 Inspired by premium technology campaigns from brands like Apple, Bang & Olufsen, Sony, and Dyson, AUREN explores photorealistic AI-generated product imagery, cinematic storytelling, and modern creative workflows through a fictional high-end headphone brand.
